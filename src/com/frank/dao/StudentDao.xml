@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--namespace 命名空间，不同的mapper映射，使用不同的命名空间-->
+<!--namespace.sqlId-->
+<mapper namespace="com.frank.dao.StudentDao">
+    <select id="findById" resultType="com.frank.domain.Student" parameterType="java.lang.Integer">
+        select * from tbl_student where id = #{id}
+    </select>
+
+    <select id="selectAll" resultType="com.frank.domain.Student">
+        select * from tbl_student
+    </select>
+    <insert id="save">
+        insert into tbl_student (id,age,name) values (#{id},#{age},#{name});
+    </insert>
+    <update id="updateById">
+        update tbl_student set age=#{age},name=#{name}   where id=#{id} ;
+    </update>
+    <delete id="deleteById">
+        delete from tbl_student where id = #{id}
+    </delete>
+    <select id="selectA" parameterType="int" resultType="Student">
+        select * from tbl_student where id = #{id};
+    </select>
+    <select id="selectB" resultType="Student" parameterType="java.util.Map">
+        select * from tbl_student where name =#{name} and age=#{age};
+    </select>
+    <select id="selectC" resultType="student">
+        select * from tbl_student where name like '%' #{name} '%';
+    </select>
+<!--&lt;!&ndash;  resultMap 用来将数据库中的表和domain内的类进行一一对应，type即需要对应的类型  &ndash;&gt;-->
+<!--    <resultMap id="stuMap" type="Student">-->
+<!--&lt;!&ndash;        property 表示类中的属性名称-->
+<!--            column 表示数据库表中字段名称-->
+<!--            id 为主键配置-->
+<!--            result 为其他字段配置-->
+<!--            &ndash;&gt;-->
+<!--        <id property="id" column="id"/>-->
+<!--        <result property="name" column="fullname"/>-->
+<!--        <result property="age" column="age"/>-->
+<!--    </resultMap>-->
+    <select id="selectD" resultType="Student">
+        select * from tbl_student
+        <where>
+            <if test="name!=null and name!=''">
+                and name like '%' #{name} '%'
+            </if>
+            <if test="age!=null and age>0">
+                and age between 0 and #{age}
+            </if>
+        </where>
+    </select>
+
+    <select id="selectE" resultType="Student">
+        select * from tbl_student
+        where id in
+        <!-- foreach 标签主要是用来拼接数组的，比如有多个查询的匹配条件
+          collection：类型 array和List
+          item：遍历元素的标识符
+          open：开始的标识符
+          close：结束的标识符
+          separator：每一个元素之间的分隔符-->
+        <foreach collection="array" item="id" open="(" close=")" separator=",">
+            #{id}
+        </foreach>
+    </select>
+
+    <select id="selectF" resultType="map">
+        select s.name as sname,c.name as cname
+        from tbl_student s
+        join tbl_classroom c
+        on c.roomid = s.roomid
+    </select>
+</mapper>
